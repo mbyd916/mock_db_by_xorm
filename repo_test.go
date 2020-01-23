@@ -23,6 +23,15 @@ func TestPersonGet(t *testing.T) {
 			So(person, ShouldResemble, &Person{ID: id, Name: name})
 		})
 
+		Convey("get none person by id", func() {
+			mock.ExpectQuery("SELECT (.+) FROM `person`").
+				WithArgs(id).
+				WillReturnRows(sqlmock.NewRows([]string{"id", "name"}))
+			person, err := repo.Get(id)
+			So(err, ShouldBeError)
+			So(person, ShouldResemble, &Person{ID: id})
+		})
+
 		Reset(func() {
 			So(mock.ExpectationsWereMet(), ShouldBeNil)
 		})
@@ -42,6 +51,15 @@ func TestPersonCreate(t *testing.T) {
 
 			err := repo.Create(id, name)
 			So(err, ShouldBeNil)
+		})
+
+		Convey("create none person", func() {
+			mock.ExpectExec("INSERT INTO `person`").
+				WithArgs(id, name).
+				WillReturnResult(sqlmock.NewResult(0, 0))
+
+			err := repo.Create(id, name)
+			So(err, ShouldBeError)
 		})
 
 		Reset(func() {
