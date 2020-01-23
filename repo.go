@@ -56,15 +56,7 @@ func (r repo) Update(id int, name string) (err error) {
 }
 
 func (r repo) Delete(id int) (err error) {
-	affected, err := r.session.ID(id).Delete(&Person{})
-	if err != nil {
-		return
-	}
-
-	if affected == 0 {
-		err = fmt.Errorf("delete err, because of 0 affected")
-		return
-	}
+	_, err = r.session.ID(id).Delete(&Person{})
 
 	return
 }
